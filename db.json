@@ -1,0 +1,178 @@
+{
+	"categories": [
+		{
+			"id": 1,
+			"name": "Kiyimlar",
+			"image": "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=300&q=80",
+			"productCount": 24,
+			"description": "Erkaklar va ayollar uchun zamonaviy kolleksiya"
+		},
+		{
+			"id": 2,
+			"name": "Poyabzallar",
+			"image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=300&q=80",
+			"productCount": 18,
+			"description": "Sport va klassik uslubdagi oyoq kiyimlar"
+		},
+		{
+			"id": 3,
+			"name": "Aksessuarlar",
+			"image": "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=300&q=80",
+			"productCount": 32,
+			"description": "Sumka, soat va kundalik aksessuarlar"
+		},
+		{
+			"id": 4,
+			"name": "Elektronika",
+			"image": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=300&q=80",
+			"productCount": 15,
+			"description": "Uy va ofis uchun aqlli qurilmalar"
+		},
+		{
+			"id": 5,
+			"name": "Sport",
+			"image": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=300&q=80",
+			"productCount": 20,
+			"description": "Mashg'ulot va faol dam olish uchun jihozlar"
+		},
+		{
+			"id": 6,
+			"name": "Uy-ro'zg'or",
+			"image": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=300&q=80",
+			"productCount": 28,
+			"description": "Kundalik hayot uchun foydali buyumlar"
+		}
+	],
+	"orders": [
+		{
+			"id": "#1001",
+			"customer": "Ali Valiyev",
+			"total": "630,000 so'm",
+			"status": "Yangi"
+		},
+		{
+			"id": "#1002",
+			"customer": "Nodira Karimova",
+			"total": "1,450,000 so'm",
+			"status": "Yetkazilmoqda"
+		},
+		{
+			"id": "#1003",
+			"customer": "Sardor Umarov",
+			"total": "250,000 so'm",
+			"status": "Yakunlandi"
+		}
+	],
+	"users": [
+		{
+			"id": 1,
+			"fullName": "Ali Valiyev",
+			"email": "ali@mail.uz",
+			"role": "admin"
+		},
+		{
+			"id": 2,
+			"fullName": "Nodira Karimova",
+			"email": "nodira@mail.uz",
+			"role": "user"
+		},
+		{
+			"id": 3,
+			"fullName": "Sardor Umarov",
+			"email": "sardor@mail.uz",
+			"role": "user"
+		},
+		{
+			"id": 4,
+			"fullName": "Malika Tursunova",
+			"email": "malika@mail.uz",
+			"role": "user"
+		}
+	],
+	"products": [
+		{
+			"id": 1,
+			"name": "Klassik ko'ylak",
+			"categoryId": 1,
+			"price": 189000,
+			"stock": 14
+		},
+		{
+			"id": 2,
+			"name": "Yozgi futbolka",
+			"categoryId": 1,
+			"price": 99000,
+			"stock": 22
+		},
+		{
+			"id": 3,
+			"name": "Sport krasovka",
+			"categoryId": 2,
+			"price": 349000,
+			"stock": 9
+		},
+		{
+			"id": 4,
+			"name": "Charm tufli",
+			"categoryId": 2,
+			"price": 420000,
+			"stock": 6
+		},
+		{
+			"id": 5,
+			"name": "Smart soat",
+			"categoryId": 3,
+			"price": 560000,
+			"stock": 11
+		},
+		{
+			"id": 6,
+			"name": "Bluetooth quloqchin",
+			"categoryId": 4,
+			"price": 299000,
+			"stock": 13
+		},
+		{
+			"id": 7,
+			"name": "Yoga gilami",
+			"categoryId": 5,
+			"price": 149000,
+			"stock": 18
+		},
+		{
+			"id": 8,
+			"name": "Oshxona blenderi",
+			"categoryId": 6,
+			"price": 389000,
+			"stock": 7
+		},
+		{
+			"id": 9,
+			"name": "Dekor chiroq",
+			"categoryId": 6,
+			"price": 119000,
+			"stock": 16
+		},
+		{
+			"id": 10,
+			"name": "Sayohat sumkasi",
+			"categoryId": 3,
+			"price": 279000,
+			"stock": 10
+		},
+		{
+			"id": 11,
+			"name": "Mini kolonka",
+			"categoryId": 4,
+			"price": 229000,
+			"stock": 15
+		},
+		{
+			"id": 12,
+			"name": "Sport butilka",
+			"categoryId": 5,
+			"price": 59000,
+			"stock": 30
+		}
+	]
+}
