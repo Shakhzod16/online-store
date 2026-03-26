@@ -3,6 +3,7 @@ import { FaHeart, FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { Link, useSearchParams } from 'react-router-dom';
 import Footer from '../assets/components/Footer';
 import Header from '../assets/components/Header';
+import { useCart } from '../context/CartContext';
 import type { StoreProduct } from '../types/store';
 
 const PRODUCTS_API = 'https://api.escuelajs.co/api/v1/products';
@@ -27,6 +28,7 @@ const ProductsPage = () => {
 		searchParams.get('category') || 'all',
 	);
 	const [priceLimit, setPriceLimit] = useState(0);
+	const { addToCart } = useCart();
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -252,12 +254,13 @@ const ProductsPage = () => {
 													</div>
 												</Link>
 
-												<div className='px-5 pb-5'>
-													<button
-														type='button'
-														className='ml-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#241d1a] text-white transition-colors hover:bg-[#f08d21]'
-														aria-label={`${product.title} savatchaga qo'shish`}>
-														<FaShoppingCart className='text-sm' />
+													<div className='px-5 pb-5'>
+														<button
+															type='button'
+															onClick={() => addToCart(product)}
+															className='ml-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#241d1a] text-white transition-colors hover:bg-[#f08d21]'
+															aria-label={`${product.title} savatchaga qo'shish`}>
+															<FaShoppingCart className='text-sm' />
 													</button>
 												</div>
 											</article>

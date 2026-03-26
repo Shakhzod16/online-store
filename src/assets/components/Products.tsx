@@ -1,5 +1,6 @@
 import { FaHeart, FaShoppingCart } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
 import type { StoreProduct } from '../../types/store';
 
 interface ProductsProps {
@@ -20,6 +21,7 @@ const formatPrice = (price: number) =>
 
 function Products({ products, isLoading, error }: ProductsProps) {
 	const visibleProducts = products.slice(0, 8);
+	const { addToCart } = useCart();
 
 	return (
 		<section className='py-8 sm:py-10'>
@@ -89,12 +91,13 @@ function Products({ products, isLoading, error }: ProductsProps) {
 								</div>
 							</Link>
 
-							<div className='px-4 pb-4'>
-								<button
-									type='button'
-									className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#241d1a] text-white transition-colors hover:bg-[#f08d21]'
-									aria-label={`${product.title} savatchaga qo'shish`}
-								>
+								<div className='px-4 pb-4'>
+									<button
+										type='button'
+										onClick={() => addToCart(product)}
+										className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#241d1a] text-white transition-colors hover:bg-[#f08d21]'
+										aria-label={`${product.title} savatchaga qo'shish`}
+									>
 									<FaShoppingCart className='text-sm' />
 								</button>
 							</div>

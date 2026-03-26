@@ -13,3 +13,12 @@ export interface StoreProduct {
 	images: string[];
 	category: StoreCategory;
 }
+
+export interface CartItem {
+	id: number;
+	title: string;
+	price: number;
+	image: string;
+	categoryName: string;
+	quantity: number;
+}

@@ -7,11 +7,14 @@ import {
 	FaEyeSlash,
 	FaHeart,
 	FaMoon,
+	FaSun,
 	FaShieldHalved,
 	FaUser,
 	FaXmark,
 } from 'react-icons/fa6';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
+import { useTheme } from '../../context/ThemeContext';
 
 type AuthMode = 'login' | 'register';
 type RegisteredUser = {
@@ -55,6 +58,8 @@ const Header = () => {
 	const [errorMessage, setErrorMessage] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
 	const [currentUser, setCurrentUser] = useState<SessionUser | null>(() => getStoredCurrentUser());
+	const { cartCount } = useCart();
+	const { theme, toggleTheme } = useTheme();
 	const [loginData, setLoginData] = useState({
 		email: '',
 		password: '',
@@ -249,24 +254,31 @@ const Header = () => {
 						</nav>
 
 						<div className='flex items-center gap-6 text-[22px] text-[#877d77]'>
-							<button
-								type='button'
-								aria-label='Tungi rejim'
-								className='cursor-pointer transition-colors hover:text-[#f08d21]'>
-								<FaMoon />
-							</button>
+								<button
+									type='button'
+									aria-label={theme === 'dark' ? "Kunduzgi rejimga o'tish" : "Tungi rejimga o'tish"}
+									onClick={toggleTheme}
+									className='cursor-pointer transition-colors hover:text-[#f08d21]'>
+									{theme === 'dark' ? <FaSun /> : <FaMoon />}
+								</button>
 							<button
 								type='button'
 								aria-label='Sevimlilar'
 								className='cursor-pointer transition-colors hover:text-[#f08d21]'>
 								<FaHeart />
 							</button>
-							<button
-								type='button'
-								aria-label='Savatcha'
-								className='cursor-pointer transition-colors hover:text-[#f08d21]'>
-								<FaCartShopping />
-							</button>
+								<button
+									type='button'
+									aria-label='Savatcha'
+									onClick={() => navigate('/cart')}
+									className='relative cursor-pointer transition-colors hover:text-[#f08d21]'>
+									<FaCartShopping />
+									{cartCount > 0 ? (
+										<span className='absolute -top-2 -right-3 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[#f08d21] px-1 text-[11px] font-semibold text-white'>
+											{cartCount}
+										</span>
+									) : null}
+								</button>
 							{currentUser?.role === 'admin' ? (
 								<>
 									<button

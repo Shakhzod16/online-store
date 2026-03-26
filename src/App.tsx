@@ -4,6 +4,7 @@ import Admin from './Pages/admin/Admin';
 import ProductDetail from './Pages/ProductDetail';
 import ProductsPage from './Pages/ProductsPage';
 import CategoriesPage from './Pages/CategoriesPage';
+import CartPage from './Pages/CartPage';
 
 function App() {
 	return (
@@ -12,6 +13,7 @@ function App() {
 			<Route path='/products' element={<ProductsPage />} />
 			<Route path='/categories' element={<CategoriesPage />} />
 			<Route path='/products/:id' element={<ProductDetail />} />
+			<Route path='/cart' element={<CartPage />} />
 			<Route path='/admin' element={<Admin />} />
 		</Routes>
 	);

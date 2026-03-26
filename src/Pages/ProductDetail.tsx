@@ -3,6 +3,7 @@ import { FaHeart, FaMinus, FaPlus, FaShoppingCart } from 'react-icons/fa';
 import { Link, useParams } from 'react-router-dom';
 import Footer from '../assets/components/Footer';
 import Header from '../assets/components/Header';
+import { useCart } from '../context/CartContext';
 import type { StoreProduct } from '../types/store';
 
 const PRODUCTS_API = 'https://api.escuelajs.co/api/v1/products';
@@ -21,6 +22,7 @@ const ProductDetail = () => {
 	const [quantity, setQuantity] = useState(1);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState('');
+	const { addToCart } = useCart();
 
 	useEffect(() => {
 		if (!id) {
@@ -170,12 +172,17 @@ const ProductDetail = () => {
 								</div>
 							</div>
 
-							<div className='mt-8 flex gap-3'>
-								<button
-									type='button'
-									className='flex min-h-14 flex-1 items-center justify-center gap-3 rounded-full bg-[#241d1a] px-6 text-base font-semibold text-white transition-colors hover:bg-[#f08d21]'>
-									<FaShoppingCart />
-									Savatga qo'shish
+								<div className='mt-8 flex gap-3'>
+									<button
+										type='button'
+										onClick={() => {
+											if (product) {
+												addToCart(product, quantity);
+											}
+										}}
+										className='flex min-h-14 flex-1 items-center justify-center gap-3 rounded-full bg-[#241d1a] px-6 text-base font-semibold text-white transition-colors hover:bg-[#f08d21]'>
+										<FaShoppingCart />
+										Savatga qo'shish
 								</button>
 								<button
 									type='button'
