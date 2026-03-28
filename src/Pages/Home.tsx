@@ -1,52 +1,15 @@
-import { useEffect, useState } from 'react';
 import Banner from '../assets/components/Banner';
 import Categorys from '../assets/components/Categorys';
 import Footer from '../assets/components/Footer';
 import Header from '../assets/components/Header';
 import Hero from '../assets/components/Hero';
 import Products from '../assets/components/Products';
-import type { StoreProduct } from '../types/store';
-
-const PRODUCTS_API = 'https://api.escuelajs.co/api/v1/products';
+import { storeProducts } from '../data/storeCatalog';
 
 const Home = () => {
-	const [products, setProducts] = useState<StoreProduct[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState('');
-
-	useEffect(() => {
-		const controller = new AbortController();
-
-		const loadProducts = async () => {
-			try {
-				setIsLoading(true);
-				setError('');
-
-				const response = await fetch(PRODUCTS_API, {
-					signal: controller.signal,
-				});
-
-				if (!response.ok) {
-					throw new Error(`Request failed: ${response.status}`);
-				}
-
-				const data: StoreProduct[] = await response.json();
-				setProducts(data);
-			} catch (err) {
-				if (err instanceof DOMException && err.name === 'AbortError') {
-					return;
-				}
-
-				setError("Mahsulotlarni yuklab bo'lmadi.");
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		void loadProducts();
-
-		return () => controller.abort();
-	}, []);
+	const products = storeProducts;
+	const isLoading = false;
+	const error = '';
 
 	return (
 		<div className='w-full bg-[#fbfaf8]'>

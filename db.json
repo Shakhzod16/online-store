@@ -43,26 +43,48 @@
 			"description": "Kundalik hayot uchun foydali buyumlar"
 		}
 	],
-	"orders": [
-		{
-			"id": "#1001",
-			"customer": "Ali Valiyev",
-			"total": "630,000 so'm",
-			"status": "Yangi"
-		},
-		{
-			"id": "#1002",
-			"customer": "Nodira Karimova",
-			"total": "1,450,000 so'm",
-			"status": "Yetkazilmoqda"
-		},
-		{
-			"id": "#1003",
-			"customer": "Sardor Umarov",
-			"total": "250,000 so'm",
-			"status": "Yakunlandi"
-		}
-	],
+		"orders": [
+			{
+				"id": "#1001",
+				"customer": "Ali Valiyev",
+				"date": "2026-03-10",
+				"itemCount": 3,
+				"total": "630,000 so'm",
+				"status": "Yangi"
+			},
+			{
+				"id": "#1002",
+				"customer": "Nodira Karimova",
+				"date": "2026-03-09",
+				"itemCount": 2,
+				"total": "1,450,000 so'm",
+				"status": "Yetkazilmoqda"
+			},
+			{
+				"id": "#1003",
+				"customer": "Sardor Umarov",
+				"date": "2026-03-08",
+				"itemCount": 1,
+				"total": "250,000 so'm",
+				"status": "Yakunlandi"
+			},
+			{
+				"id": "#1004",
+				"customer": "Malika Rahimova",
+				"date": "2026-03-07",
+				"itemCount": 4,
+				"total": "890,000 so'm",
+				"status": "Bekor qilindi"
+			},
+			{
+				"id": "#1005",
+				"customer": "Jasur Toshmatov",
+				"date": "2026-03-06",
+				"itemCount": 1,
+				"total": "380,000 so'm",
+				"status": "Yangi"
+			}
+		],
 	"users": [
 		{
 			"id": 1,

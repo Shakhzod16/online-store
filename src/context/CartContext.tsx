@@ -1,19 +1,8 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { CartContext, type CartContextValue } from './cart-context';
 import type { CartItem, StoreProduct } from '../types/store';
 
-interface CartContextValue {
-	items: CartItem[];
-	cartCount: number;
-	cartTotal: number;
-	addToCart: (product: StoreProduct, quantity?: number) => void;
-	updateQuantity: (productId: number, quantity: number) => void;
-	removeFromCart: (productId: number) => void;
-	clearCart: () => void;
-}
-
 const CART_STORAGE_KEY = 'online-store-cart';
-
-const CartContext = createContext<CartContextValue | null>(null);
 
 const getProductImage = (product: StoreProduct) => product.images[0] || product.category.image;
 
@@ -98,17 +87,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 			},
 			clearCart: () => setItems([]),
 		};
-	}, [items]);
+		}, [items]);
 
 	return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
-};
-
-export const useCart = () => {
-	const context = useContext(CartContext);
-
-	if (!context) {
-		throw new Error('useCart must be used within CartProvider');
-	}
-
-	return context;
 };

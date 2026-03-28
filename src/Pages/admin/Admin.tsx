@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Categories from './Categories';
 import Dashboard from './Dashboard';
+import OrderPage from './Order';
 import Products from './Products';
 import Sidebar, { type AdminSection } from './Sidebar';
 import Users from './Users';
@@ -41,6 +42,35 @@ const emptyProductForm: ProductForm = {
 const normalizeRole = (role: string): User['role'] =>
 	role === 'admin' ? 'admin' : 'user';
 
+const normalizeOrderStatus = (status: string): Order['status'] => {
+	if (status === 'Yangi' || status === 'Yetkazilmoqda' || status === 'Yakunlandi' || status === 'Bekor qilindi') {
+		return status;
+	}
+
+	return 'Yangi';
+};
+
+const fallbackOrderDates = ['2026-03-10', '2026-03-09', '2026-03-08', '2026-03-07', '2026-03-06'];
+const fallbackOrderCounts = [3, 2, 1, 4, 1];
+
+const preferMoreCompleteCollection = <T,>(savedItems: T[] | undefined, defaultItems: T[]) => {
+	if (!Array.isArray(savedItems)) {
+		return defaultItems;
+	}
+
+	return savedItems.length >= defaultItems.length ? savedItems : defaultItems;
+};
+
+const normalizeOrders = (orders: Array<Partial<Order> & { id: string; customer: string; total: string; status: string }>): Order[] =>
+	orders.map((order, index) => ({
+		id: order.id,
+		customer: order.customer,
+		date: order.date?.trim() || fallbackOrderDates[index] || '2026-03-01',
+		itemCount: typeof order.itemCount === 'number' && Number.isFinite(order.itemCount) ? order.itemCount : fallbackOrderCounts[index] || 1,
+		total: order.total,
+		status: normalizeOrderStatus(order.status),
+	}));
+
 const createEmailFromName = (fullName: string) =>
 	`${fullName
 		.toLowerCase()
@@ -57,20 +87,6 @@ const normalizeUsers = (users: Array<Partial<User> & { id: number; fullName: str
 		role: normalizeRole(user.role),
 	}));
 
-	const placeholderConfig: Record<
-	Exclude<AdminSection, 'dashboard' | 'categories' | 'products'>,
-	{ title: string; text: string }
-> = {
-	orders: {
-		title: 'Buyurtmalar',
-		text: "Buyurtmalar bo'limini keyingi bosqichda .",
-	},
-	users: {
-		title: 'Foydalanuvchilar',
-		text: '',
-	},
-};
-
 const Admin = () => {
 	const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
 	const [categories, setCategories] = useState<Category[]>([]);
@@ -86,32 +102,41 @@ const Admin = () => {
 	useEffect(() => {
 		const controller = new AbortController();
 
-		const loadAdminData = async () => {
-			try {
-				setIsLoading(true);
-				setError('');
+			const loadAdminData = async () => {
+				try {
+					setIsLoading(true);
+					setError('');
 
-				const savedData = localStorage.getItem(STORAGE_KEY);
-				if (savedData) {
-					const parsedData: AdminData = JSON.parse(savedData);
-					setCategories(parsedData.categories ?? []);
-					setOrders(parsedData.orders ?? []);
-					setUsers(normalizeUsers((parsedData.users as Array<Partial<User> & { id: number; fullName: string; role: string }>) ?? []));
-					setProducts(parsedData.products ?? []);
-					return;
-				}
+					const response = await fetch('/db.json', { signal: controller.signal });
+					if (!response.ok) {
+						throw new Error(`Request failed: ${response.status}`);
+					}
 
-				const response = await fetch('/db.json', { signal: controller.signal });
-				if (!response.ok) {
-					throw new Error(`Request failed: ${response.status}`);
-				}
+					const defaultData: AdminData = await response.json();
+					const savedData = localStorage.getItem(STORAGE_KEY);
 
-				const data: AdminData = await response.json();
-				setCategories(data.categories ?? []);
-				setOrders(data.orders ?? []);
-				setUsers(normalizeUsers((data.users as Array<Partial<User> & { id: number; fullName: string; role: string }>) ?? []));
-				setProducts(data.products ?? []);
-			} catch (err) {
+					let resolvedData = defaultData;
+
+					if (savedData) {
+						try {
+							const parsedData: AdminData = JSON.parse(savedData);
+
+							resolvedData = {
+								categories: preferMoreCompleteCollection(parsedData.categories, defaultData.categories ?? []),
+								orders: preferMoreCompleteCollection(parsedData.orders, defaultData.orders ?? []),
+								users: preferMoreCompleteCollection(parsedData.users, defaultData.users ?? []),
+								products: preferMoreCompleteCollection(parsedData.products, defaultData.products ?? []),
+							};
+						} catch {
+							resolvedData = defaultData;
+						}
+					}
+
+					setCategories(resolvedData.categories ?? []);
+					setOrders(normalizeOrders((resolvedData.orders as Array<Partial<Order> & { id: string; customer: string; total: string; status: string }>) ?? []));
+					setUsers(normalizeUsers((resolvedData.users as Array<Partial<User> & { id: number; fullName: string; role: string }>) ?? []));
+					setProducts(resolvedData.products ?? []);
+				} catch (err) {
 				if (err instanceof DOMException && err.name === 'AbortError') {
 					return;
 				}
@@ -292,22 +317,15 @@ const Admin = () => {
 									onAddProduct={openCreateProduct}
 									onEditProduct={openEditProduct}
 									onDeleteProduct={handleDeleteProduct}
-								/>
-							)}
+									/>
+								)}
 
-							{activeSection === 'users' && <Users users={users} />}
+								{activeSection === 'users' && <Users users={users} />}
 
-							{activeSection !== 'dashboard' && activeSection !== 'categories' && activeSection !== 'products' && activeSection !== 'users' && (
-								<section className='rounded-2xl border border-[#ece4db] bg-white p-6'>
-									<h1 className='text-3xl font-semibold text-[#241f1b]'>{placeholderConfig[activeSection].title}</h1>
-									<p className='mt-2 max-w-2xl text-sm leading-7 text-[#7b6f65]'>
-										{placeholderConfig[activeSection].text}
-									</p>
-								</section>
-							)}
-						</>
-					)}
-				</main>
+								{activeSection === 'orders' && <OrderPage orders={orders} />}
+							</>
+						)}
+					</main>
 			</div>
 
 			{modalState?.type === 'category' && (

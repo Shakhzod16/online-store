@@ -1,6 +1,6 @@
-import { FaHeart, FaShoppingCart } from 'react-icons/fa';
+import { FaShoppingCart } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../hooks/useCart';
 import type { StoreProduct } from '../../types/store';
 
 interface ProductsProps {
@@ -53,28 +53,19 @@ function Products({ products, isLoading, error }: ProductsProps) {
 				</div>
 			) : (
 				<div className='grid gap-5 sm:grid-cols-2 xl:grid-cols-4'>
-					{visibleProducts.map((product) => (
+						{visibleProducts.map(product => (
 						<article
 							key={product.id}
 							className='overflow-hidden rounded-xl border border-[#ded8d2] bg-white shadow-[0_8px_24px_rgba(40,28,20,0.06)] transition-shadow hover:shadow-[0_14px_34px_rgba(40,28,20,0.12)]'
 						>
-							<Link to={`/products/${product.id}`} className='block'>
-								<div className='relative h-80 overflow-hidden'>
-									<img
-										src={getProductImage(product)}
-										alt={product.title}
-										className='h-full w-full object-cover transition-transform duration-500 hover:scale-105'
-									/>
-
-									<button
-										type='button'
-										className='absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/85 text-[#9b928a] backdrop-blur-sm transition-colors hover:text-[#f02121]'
-										aria-label={`${product.title} yoqtirilganlarga qo'shish`}
-										onClick={event => event.preventDefault()}
-									>
-										<FaHeart />
-									</button>
-								</div>
+								<Link to={`/products/${product.id}`} className='block'>
+									<div className='relative h-80 overflow-hidden'>
+										<img
+											src={getProductImage(product)}
+											alt={product.title}
+											className='h-full w-full object-cover transition-transform duration-500 hover:scale-105'
+										/>
+									</div>
 
 								<div className='flex items-end justify-between gap-4 px-4 py-4'>
 									<div>
@@ -96,11 +87,10 @@ function Products({ products, isLoading, error }: ProductsProps) {
 										type='button'
 										onClick={() => addToCart(product)}
 										className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#241d1a] text-white transition-colors hover:bg-[#f08d21]'
-										aria-label={`${product.title} savatchaga qo'shish`}
-									>
-									<FaShoppingCart className='text-sm' />
-								</button>
-							</div>
+										aria-label={`${product.title} savatchaga qo'shish`}>
+										<FaShoppingCart className='text-sm' />
+									</button>
+								</div>
 						</article>
 					))}
 				</div>

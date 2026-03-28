@@ -1,12 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
-import { FaHeart, FaSearch, FaShoppingCart } from 'react-icons/fa';
+import { useMemo, useState } from 'react';
+import { FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { Link, useSearchParams } from 'react-router-dom';
 import Footer from '../assets/components/Footer';
 import Header from '../assets/components/Header';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../hooks/useCart';
+import { storeProducts } from '../data/storeCatalog';
 import type { StoreProduct } from '../types/store';
-
-const PRODUCTS_API = 'https://api.escuelajs.co/api/v1/products';
 
 const formatPrice = (price: number) =>
 	new Intl.NumberFormat('en-US', {
@@ -20,49 +19,11 @@ const getProductImage = (product: StoreProduct) =>
 
 const ProductsPage = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
-	const [products, setProducts] = useState<StoreProduct[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState('');
 	const [searchTerm, setSearchTerm] = useState('');
-	const [selectedCategory, setSelectedCategory] = useState(
-		searchParams.get('category') || 'all',
-	);
-	const [priceLimit, setPriceLimit] = useState(0);
+	const products = storeProducts;
 	const { addToCart } = useCart();
-
-	useEffect(() => {
-		const controller = new AbortController();
-
-		const loadProducts = async () => {
-			try {
-				setIsLoading(true);
-				setError('');
-
-				const response = await fetch(PRODUCTS_API, {
-					signal: controller.signal,
-				});
-
-				if (!response.ok) {
-					throw new Error(`Request failed: ${response.status}`);
-				}
-
-				const data: StoreProduct[] = await response.json();
-				setProducts(data);
-			} catch (err) {
-				if (err instanceof DOMException && err.name === 'AbortError') {
-					return;
-				}
-
-				setError("Mahsulotlarni yuklab bo'lmadi.");
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		void loadProducts();
-
-		return () => controller.abort();
-	}, []);
+	const isLoading = false;
+	const error = '';
 
 	const maxPrice = useMemo(() => {
 		if (products.length === 0) {
@@ -71,30 +32,14 @@ const ProductsPage = () => {
 
 		return Math.max(...products.map(product => product.price));
 	}, [products]);
-
-	useEffect(() => {
-		if (maxPrice > 0) {
-			setPriceLimit(current => (current === 0 ? maxPrice : Math.min(current, maxPrice)));
-		}
-	}, [maxPrice]);
+	const [priceLimit, setPriceLimit] = useState(maxPrice);
 
 	const categories = useMemo(
 		() => Array.from(new Set(products.map(product => product.category.name))),
 		[products],
 	);
-
-	useEffect(() => {
-		const categoryFromUrl = searchParams.get('category');
-
-		if (categoryFromUrl && categories.includes(categoryFromUrl)) {
-			setSelectedCategory(categoryFromUrl);
-			return;
-		}
-
-		if (!categoryFromUrl) {
-			setSelectedCategory('all');
-		}
-	}, [categories, searchParams]);
+	const categoryFromUrl = searchParams.get('category');
+	const selectedCategory = categoryFromUrl && categories.includes(categoryFromUrl) ? categoryFromUrl : 'all';
 
 	const filteredProducts = useMemo(() => {
 		const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -113,8 +58,6 @@ const ProductsPage = () => {
 	}, [priceLimit, products, searchTerm, selectedCategory]);
 
 	const handleCategoryChange = (category: string) => {
-		setSelectedCategory(category);
-
 		if (category === 'all') {
 			setSearchParams({});
 			return;
@@ -225,21 +168,13 @@ const ProductsPage = () => {
 												key={product.id}
 												className='overflow-hidden rounded-[24px] border border-[#e5ddd5] bg-white shadow-[0_10px_28px_rgba(40,28,20,0.05)] transition-shadow hover:shadow-[0_14px_36px_rgba(40,28,20,0.1)]'>
 												<Link to={`/products/${product.id}`} className='block'>
-													<div className='relative h-84 overflow-hidden'>
-														<img
-															src={getProductImage(product)}
-															alt={product.title}
-															className='h-full w-full object-cover transition-transform duration-500 hover:scale-105'
-														/>
-
-														<button
-															type='button'
-															className='absolute top-4 right-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#9b928a] backdrop-blur-sm transition-colors hover:text-[#f02121]'
-															aria-label={`${product.title} yoqtirilganlarga qo'shish`}
-															onClick={event => event.preventDefault()}>
-															<FaHeart />
-														</button>
-													</div>
+														<div className='relative h-84 overflow-hidden'>
+															<img
+																src={getProductImage(product)}
+																alt={product.title}
+																className='h-full w-full object-cover transition-transform duration-500 hover:scale-105'
+															/>
+														</div>
 
 													<div className='flex items-end justify-between gap-4 px-5 py-5'>
 														<div>

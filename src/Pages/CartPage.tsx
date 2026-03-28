@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FaMinus, FaPlus, FaTrashCan } from 'react-icons/fa6';
 import Footer from '../assets/components/Footer';
 import Header from '../assets/components/Header';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../hooks/useCart';
 
 const formatPrice = (price: number) =>
 	new Intl.NumberFormat('uz-UZ').format(price * 10000) + " so'm";

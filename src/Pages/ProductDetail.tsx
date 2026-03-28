@@ -1,12 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
-import { FaHeart, FaMinus, FaPlus, FaShoppingCart } from 'react-icons/fa';
+import { useMemo, useState } from 'react';
+import { FaMinus, FaPlus, FaShoppingCart } from 'react-icons/fa';
 import { Link, useParams } from 'react-router-dom';
 import Footer from '../assets/components/Footer';
 import Header from '../assets/components/Header';
-import { useCart } from '../context/CartContext';
+import { getStoreProductById } from '../data/storeCatalog';
+import { useCart } from '../hooks/useCart';
 import type { StoreProduct } from '../types/store';
-
-const PRODUCTS_API = 'https://api.escuelajs.co/api/v1/products';
 
 const formatPrice = (price: number) =>
 	new Intl.NumberFormat('en-US', {
@@ -17,53 +16,18 @@ const formatPrice = (price: number) =>
 
 const ProductDetail = () => {
 	const { id } = useParams();
-	const [product, setProduct] = useState<StoreProduct | null>(null);
 	const [selectedImage, setSelectedImage] = useState('');
 	const [quantity, setQuantity] = useState(1);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState('');
 	const { addToCart } = useCart();
-
-	useEffect(() => {
+	const isLoading = false;
+	const product = useMemo<StoreProduct | null>(() => {
 		if (!id) {
-			setError("Mahsulot topilmadi.");
-			setIsLoading(false);
-			return;
+			return null;
 		}
 
-		const controller = new AbortController();
-
-		const loadProduct = async () => {
-			try {
-				setIsLoading(true);
-				setError('');
-
-				const response = await fetch(`${PRODUCTS_API}/${id}`, {
-					signal: controller.signal,
-				});
-
-				if (!response.ok) {
-					throw new Error(`Request failed: ${response.status}`);
-				}
-
-				const data: StoreProduct = await response.json();
-				setProduct(data);
-				setSelectedImage(data.images[0] || data.category.image);
-			} catch (err) {
-				if (err instanceof DOMException && err.name === 'AbortError') {
-					return;
-				}
-
-				setError("Mahsulot ma'lumotlarini yuklab bo'lmadi.");
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		void loadProduct();
-
-		return () => controller.abort();
+		return getStoreProductById(Number(id));
 	}, [id]);
+	const error = product ? '' : "Mahsulot topilmadi.";
 
 	const galleryImages = useMemo(() => {
 		if (!product) {
@@ -73,23 +37,18 @@ const ProductDetail = () => {
 		const images = product.images.filter(Boolean);
 		return images.length > 0 ? images : [product.category.image];
 	}, [product]);
-
-	useEffect(() => {
-		if (galleryImages.length > 0 && !galleryImages.includes(selectedImage)) {
-			setSelectedImage(galleryImages[0]);
-		}
-	}, [galleryImages, selectedImage]);
+	const activeImage = galleryImages.includes(selectedImage) ? selectedImage : galleryImages[0] || '';
 
 	return (
 		<div className='min-h-screen w-full bg-[#fbfaf8]'>
 			<Header />
 
 			<main className='mx-auto max-w-430 px-4 pt-32 pb-16 sm:px-8 lg:px-24'>
-				<Link
-					to='/'
-					className='inline-flex items-center text-sm font-medium text-[#8f8378] transition-colors hover:text-[#f08d21]'>
-					Mahsulotlarga qaytish
-				</Link>
+					<Link
+						to='/products'
+						className='inline-flex items-center text-sm font-medium text-[#8f8378] transition-colors hover:text-[#f08d21]'>
+						Mahsulotlarga qaytish
+					</Link>
 
 				{error ? (
 					<div className='mt-8 rounded-3xl border border-[#eadfce] bg-[#fff7ef] px-6 py-5 text-lg text-[#8d5d22]'>
@@ -108,25 +67,25 @@ const ProductDetail = () => {
 				) : product ? (
 					<section className='mt-6 grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)] lg:items-start'>
 						<div>
-							<div className='overflow-hidden rounded-[28px] border border-[#e9e0d7] bg-white'>
-								<img
-									src={selectedImage}
-									alt={product.title}
-									className='h-[520px] w-full object-cover'
-								/>
+								<div className='overflow-hidden rounded-[28px] border border-[#e9e0d7] bg-white'>
+									<img
+										src={activeImage}
+										alt={product.title}
+										className='h-[520px] w-full object-cover'
+									/>
 							</div>
 
 							<div className='mt-4 grid grid-cols-4 gap-3'>
 								{galleryImages.map(image => (
 									<button
 										key={image}
-										type='button'
-										onClick={() => setSelectedImage(image)}
-										className={`overflow-hidden rounded-2xl border transition ${
-											selectedImage === image
-												? 'border-[#f08d21] ring-2 ring-[#f4c58e]'
-												: 'border-[#e5ddd5] hover:border-[#cdb39a]'
-										}`}>
+											type='button'
+											onClick={() => setSelectedImage(image)}
+											className={`overflow-hidden rounded-2xl border transition ${
+												activeImage === image
+													? 'border-[#f08d21] ring-2 ring-[#f4c58e]'
+													: 'border-[#e5ddd5] hover:border-[#cdb39a]'
+											}`}>
 										<img
 											src={image}
 											alt={product.title}
@@ -172,24 +131,19 @@ const ProductDetail = () => {
 								</div>
 							</div>
 
-								<div className='mt-8 flex gap-3'>
-									<button
-										type='button'
-										onClick={() => {
-											if (product) {
+									<div className='mt-8 flex gap-3'>
+										<button
+											type='button'
+											onClick={() => {
+												if (product) {
 												addToCart(product, quantity);
 											}
 										}}
-										className='flex min-h-14 flex-1 items-center justify-center gap-3 rounded-full bg-[#241d1a] px-6 text-base font-semibold text-white transition-colors hover:bg-[#f08d21]'>
-										<FaShoppingCart />
-										Savatga qo'shish
-								</button>
-								<button
-									type='button'
-									className='flex h-14 w-14 items-center justify-center rounded-full border border-[#e5ddd5] text-[#8f8378] transition-colors hover:border-[#f08d21] hover:text-[#f08d21]'>
-									<FaHeart />
-								</button>
-							</div>
+											className='flex min-h-14 flex-1 items-center justify-center gap-3 rounded-full bg-[#241d1a] px-6 text-base font-semibold text-white transition-colors hover:bg-[#f08d21]'>
+											<FaShoppingCart />
+											Savatga qo'shish
+										</button>
+								</div>
 
 							<div className='mt-8 space-y-4 border-t border-[#f0e7df] pt-6 text-sm text-[#6f645d]'>
 								<div className='flex items-center justify-between gap-4'>

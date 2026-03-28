@@ -20,13 +20,13 @@ const Products = ({ products, categories, onAddProduct, onEditProduct, onDeleteP
 					<h1 className='text-3xl font-semibold text-[#241f1b]'>Mahsulotlar</h1>
 				</div>
 
-				<button
-					type='button'
-					onClick={onAddProduct}
-					className='inline-flex items-center border-0! justify-center gap-2 rounded-xl bg-[#f08d21] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#dd7c12]'>
-					<FaPlus className='text-xs' />
-					<span>Qo'shish</span>
-				</button>
+					<button
+						type='button'
+						onClick={onAddProduct}
+						className='inline-flex items-center justify-center gap-2 rounded-xl bg-[#f08d21] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#dd7c12]'>
+						<FaPlus className='text-xs' />
+						<span>Qo'shish</span>
+					</button>
 			</div>
 
 			<div className='overflow-hidden rounded-2xl border border-[#ece4db] bg-white'>

@@ -1,15 +1,7 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-
-type ThemeMode = 'light' | 'dark';
-
-interface ThemeContextValue {
-	theme: ThemeMode;
-	toggleTheme: () => void;
-}
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { ThemeContext, type ThemeContextValue, type ThemeMode } from './theme-context';
 
 const THEME_STORAGE_KEY = 'online-store-theme';
-
-const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const getPreferredTheme = (): ThemeMode => {
 	const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
@@ -55,15 +47,5 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 		[theme],
 	);
 
-	return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
-};
-
-export const useTheme = () => {
-	const context = useContext(ThemeContext);
-
-	if (!context) {
-		throw new Error('useTheme must be used within ThemeProvider');
-	}
-
-	return context;
-};
+		return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+	};

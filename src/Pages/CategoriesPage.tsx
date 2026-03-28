@@ -1,52 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Footer from '../assets/components/Footer';
 import Header from '../assets/components/Header';
+import { storeProducts } from '../data/storeCatalog';
 import type { StoreProduct } from '../types/store';
-
-const PRODUCTS_API = 'https://api.escuelajs.co/api/v1/products';
 
 const getProductImage = (product: StoreProduct) =>
 	product.images[0] || product.category.image;
 
 const CategoriesPage = () => {
-	const [products, setProducts] = useState<StoreProduct[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState('');
-
-	useEffect(() => {
-		const controller = new AbortController();
-
-		const loadProducts = async () => {
-			try {
-				setIsLoading(true);
-				setError('');
-
-				const response = await fetch(PRODUCTS_API, {
-					signal: controller.signal,
-				});
-
-				if (!response.ok) {
-					throw new Error(`Request failed: ${response.status}`);
-				}
-
-				const data: StoreProduct[] = await response.json();
-				setProducts(data);
-			} catch (err) {
-				if (err instanceof DOMException && err.name === 'AbortError') {
-					return;
-				}
-
-				setError("Kategoriyalarni yuklab bo'lmadi.");
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		void loadProducts();
-
-		return () => controller.abort();
-	}, []);
+	const products = storeProducts;
+	const isLoading = false;
+	const error = '';
 
 	const categories = useMemo(
 		() =>

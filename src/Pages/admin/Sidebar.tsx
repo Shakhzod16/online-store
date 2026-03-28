@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaBoxOpen, FaFolderOpen, FaShoppingBag, FaThLarge, FaUsers } from 'react-icons/fa';
 
 export type AdminSection = 'dashboard' | 'categories' | 'products' | 'orders' | 'users';
@@ -49,16 +50,16 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
 			</nav>
 
 			<div className='px-4 pb-5 xl:pt-6'>
-				<a
-					href='/'
-					className='inline-flex items-center gap-2 rounded-xl border border-[#e7ddd3] px-4 py-3 text-sm font-medium text-[#6f6359] transition hover:border-[#f08d21] hover:text-[#f08d21]'
-				>
-					<FaArrowLeft className='text-xs' />
-					<span>Do'konga qaytish</span>
-				</a>
-			</div>
-		</aside>
-	);
+					<Link
+						to='/'
+						className='inline-flex items-center gap-2 rounded-xl border border-[#e7ddd3] px-4 py-3 text-sm font-medium text-[#6f6359] transition hover:border-[#f08d21] hover:text-[#f08d21]'
+					>
+						<FaArrowLeft className='text-xs' />
+						<span>Do'konga qaytish</span>
+					</Link>
+				</div>
+			</aside>
+		);
 };
 
 export default Sidebar;

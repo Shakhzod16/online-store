@@ -42,11 +42,11 @@ function Categorys({ products, isLoading, error }: CategorysProps) {
 				</Link>
 			</div>
 
-			{error ? (
-				<div className='rounded-2xl! border! border-[#eadfce] bg-[#fff7ef] px-6! py-5! text-lg text-[#8d5d22]'>
-					{error}
-				</div>
-			) : isLoading ? (
+				{error ? (
+					<div className='rounded-2xl border border-[#eadfce] bg-[#fff7ef] px-6 py-5 text-lg text-[#8d5d22]'>
+						{error}
+					</div>
+				) : isLoading ? (
 				<div className='grid gap-5 lg:grid-cols-3'>
 					{Array.from({ length: 3 }).map((_, index) => (
 						<div key={index} className='min-h-105 animate-pulse rounded-2xl bg-[#ece5de]' />
@@ -54,11 +54,11 @@ function Categorys({ products, isLoading, error }: CategorysProps) {
 				</div>
 			) : (
 				<div className='grid gap-5 lg:grid-cols-3'>
-					{categories.map(category => (
-						<Link
-							key={category.id}
-							to='/categories'
-							className='group relative block min-h-105 overflow-hidden rounded-2xl'>
+						{categories.map(category => (
+							<Link
+								key={category.id}
+								to={`/products?category=${encodeURIComponent(category.title)}`}
+								className='group relative block min-h-105 overflow-hidden rounded-2xl'>
 							<img
 								src={category.image}
 								alt={category.title}

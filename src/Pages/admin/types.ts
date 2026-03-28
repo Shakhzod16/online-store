@@ -9,8 +9,10 @@ export type Category = {
 export type Order = {
 	id: string;
 	customer: string;
+	date: string;
+	itemCount: number;
 	total: string;
-	status: 'Yangi' | 'Yetkazilmoqda' | 'Yakunlandi';
+	status: 'Yangi' | 'Yetkazilmoqda' | 'Yakunlandi' | 'Bekor qilindi';
 };
 
 export type User = {
