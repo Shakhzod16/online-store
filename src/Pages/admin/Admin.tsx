@@ -39,8 +39,7 @@ const emptyProductForm: ProductForm = {
 	categoryId: '',
 };
 
-const normalizeRole = (role: string): User['role'] =>
-	role === 'admin' ? 'admin' : 'user';
+const normalizeRole = (role: string): User['role'] => (role === 'admin' ? 'admin' : 'user');
 
 const normalizeOrderStatus = (status: string): Order['status'] => {
 	if (status === 'Yangi' || status === 'Yetkazilmoqda' || status === 'Yakunlandi' || status === 'Bekor qilindi') {
@@ -61,23 +60,23 @@ const preferMoreCompleteCollection = <T,>(savedItems: T[] | undefined, defaultIt
 	return savedItems.length >= defaultItems.length ? savedItems : defaultItems;
 };
 
-const normalizeOrders = (orders: Array<Partial<Order> & { id: string; customer: string; total: string; status: string }>): Order[] =>
+const normalizeOrders = (
+	orders: Array<Partial<Order> & { id: string; customer: string; total: string; status: string }>,
+): Order[] =>
 	orders.map((order, index) => ({
 		id: order.id,
 		customer: order.customer,
 		date: order.date?.trim() || fallbackOrderDates[index] || '2026-03-01',
-		itemCount: typeof order.itemCount === 'number' && Number.isFinite(order.itemCount) ? order.itemCount : fallbackOrderCounts[index] || 1,
+		itemCount:
+			typeof order.itemCount === 'number' && Number.isFinite(order.itemCount)
+				? order.itemCount
+				: fallbackOrderCounts[index] || 1,
 		total: order.total,
 		status: normalizeOrderStatus(order.status),
 	}));
 
 const createEmailFromName = (fullName: string) =>
-	`${fullName
-		.toLowerCase()
-		.trim()
-		.replace(/'/g, '')
-		.split(/\s+/)
-		.join('.')}@mail.uz`;
+	`${fullName.toLowerCase().trim().replace(/'/g, '').split(/\s+/).join('.')}@mail.uz`;
 
 const normalizeUsers = (users: Array<Partial<User> & { id: number; fullName: string; role: string }>): User[] =>
 	users.map(user => ({
@@ -102,41 +101,51 @@ const Admin = () => {
 	useEffect(() => {
 		const controller = new AbortController();
 
-			const loadAdminData = async () => {
-				try {
-					setIsLoading(true);
-					setError('');
+		const loadAdminData = async () => {
+			try {
+				setIsLoading(true);
+				setError('');
 
-					const response = await fetch('/db.json', { signal: controller.signal });
-					if (!response.ok) {
-						throw new Error(`Request failed: ${response.status}`);
+				const response = await fetch('/db.json', { signal: controller.signal });
+				if (!response.ok) {
+					throw new Error(`Request failed: ${response.status}`);
+				}
+
+				const defaultData: AdminData = await response.json();
+				const savedData = localStorage.getItem(STORAGE_KEY);
+
+				let resolvedData = defaultData;
+
+				if (savedData) {
+					try {
+						const parsedData: AdminData = JSON.parse(savedData);
+
+						resolvedData = {
+							categories: preferMoreCompleteCollection(parsedData.categories, defaultData.categories ?? []),
+							orders: preferMoreCompleteCollection(parsedData.orders, defaultData.orders ?? []),
+							users: preferMoreCompleteCollection(parsedData.users, defaultData.users ?? []),
+							products: preferMoreCompleteCollection(parsedData.products, defaultData.products ?? []),
+						};
+					} catch {
+						resolvedData = defaultData;
 					}
+				}
 
-					const defaultData: AdminData = await response.json();
-					const savedData = localStorage.getItem(STORAGE_KEY);
-
-					let resolvedData = defaultData;
-
-					if (savedData) {
-						try {
-							const parsedData: AdminData = JSON.parse(savedData);
-
-							resolvedData = {
-								categories: preferMoreCompleteCollection(parsedData.categories, defaultData.categories ?? []),
-								orders: preferMoreCompleteCollection(parsedData.orders, defaultData.orders ?? []),
-								users: preferMoreCompleteCollection(parsedData.users, defaultData.users ?? []),
-								products: preferMoreCompleteCollection(parsedData.products, defaultData.products ?? []),
-							};
-						} catch {
-							resolvedData = defaultData;
-						}
-					}
-
-					setCategories(resolvedData.categories ?? []);
-					setOrders(normalizeOrders((resolvedData.orders as Array<Partial<Order> & { id: string; customer: string; total: string; status: string }>) ?? []));
-					setUsers(normalizeUsers((resolvedData.users as Array<Partial<User> & { id: number; fullName: string; role: string }>) ?? []));
-					setProducts(resolvedData.products ?? []);
-				} catch (err) {
+				setCategories(resolvedData.categories ?? []);
+				setOrders(
+					normalizeOrders(
+						(resolvedData.orders as Array<
+							Partial<Order> & { id: string; customer: string; total: string; status: string }
+						>) ?? [],
+					),
+				);
+				setUsers(
+					normalizeUsers(
+						(resolvedData.users as Array<Partial<User> & { id: number; fullName: string; role: string }>) ?? [],
+					),
+				);
+				setProducts(resolvedData.products ?? []);
+			} catch (err) {
 				if (err instanceof DOMException && err.name === 'AbortError') {
 					return;
 				}
@@ -317,15 +326,15 @@ const Admin = () => {
 									onAddProduct={openCreateProduct}
 									onEditProduct={openEditProduct}
 									onDeleteProduct={handleDeleteProduct}
-									/>
-								)}
+								/>
+							)}
 
-								{activeSection === 'users' && <Users users={users} />}
+							{activeSection === 'users' && <Users users={users} />}
 
-								{activeSection === 'orders' && <OrderPage orders={orders} />}
-							</>
-						)}
-					</main>
+							{activeSection === 'orders' && <OrderPage orders={orders} />}
+						</>
+					)}
+				</main>
 			</div>
 
 			{modalState?.type === 'category' && (
